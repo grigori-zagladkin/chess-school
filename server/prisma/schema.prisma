@@ -1,0 +1,180 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String
+  password     String
+  topics       Topic[]
+  topicAnswers TopicAnswer[]
+  avatar       String?
+  role         UserRoles
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+enum UserRoles {
+  ADMIN
+  TEACHER
+  STUDENT
+  USER
+}
+
+model Teacher {
+  id          Int      @id @default(autoincrement())
+  name        String
+  surname     String
+  achivements String[]
+
+  classes Class[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("teachers")
+}
+
+model Student {
+  id      Int    @id @default(autoincrement())
+  name    String
+  surname String
+
+  classes          StudentOnClass[]
+  classes_requests StudentOnClassRequests[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("students")
+}
+
+model StudentOnClass {
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int     @map("student_id")
+  class     Class   @relation(fields: [classId], references: [id])
+  classId   Int     @map("class_id")
+
+  @@id([studentId, classId])
+  @@map("students_on_classes")
+}
+
+model StudentOnClassRequests {
+  student       Student       @relation(fields: [studentId], references: [id])
+  studentId     Int           @map("student_id")
+  class         Class         @relation(fields: [classId], references: [id])
+  classId       Int           @map("class_id")
+  requestStatus ClassesStatus
+
+  @@id([studentId, classId])
+  @@map("students_on_classes_requests")
+}
+
+enum ClassesStatus {
+  PROCESSING
+  CONFIRMED
+}
+
+model Class {
+  id                Int                      @id @default(autoincrement())
+  type              ClassesType
+  startTime         DateTime                 @map("start_time")
+  endTime           DateTime                 @map("end_time")
+  teacher           Teacher                  @relation(fields: [teacherId], references: [id])
+  teacherId         Int                      @map("teacher_id")
+  students          StudentOnClass[]
+  students_requests StudentOnClassRequests[]
+  studentsLimit     Int                      @map("students_limit")
+  isOverflow        Boolean?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("classes")
+}
+
+model InitialInformation {
+  id          Int         @id @default(autoincrement())
+  name        String
+  surname     String
+  age         Int
+  description String
+  phoneNumber String
+  isReaded    Boolean
+  classesType ClassesType
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("initial_information")
+}
+
+enum ClassesType {
+  INDIVIDUAL
+  MINI_GROUP
+  GROUP
+}
+
+model ForumCategory {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique
+  title String
+
+  topics Topic[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("forum_categories")
+}
+
+model Topic {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique
+  question     String
+  images       String[]
+  author       User     @relation(fields: [authorId], references: [id])
+  authorId     Int      @map("author_id")
+  viewing      Int
+  answersCount Int      @map("answers_count")
+
+  forumCategory   ForumCategory? @relation(fields: [forumCategoryId], references: [id])
+  forumCategoryId Int?
+
+  answers TopicAnswer[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("topics")
+}
+
+model TopicAnswer {
+  id       Int      @id @default(autoincrement())
+  answer   String
+  images   String[]
+  isPinned Boolean? @map("is_pinned")
+  parentId Int?     @map("parent_id")
+
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int  @map("author_id")
+
+  topic   Topic @relation(fields: [topicId], references: [id])
+  topicId Int   @map("topic_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("topic_answers")
+}
