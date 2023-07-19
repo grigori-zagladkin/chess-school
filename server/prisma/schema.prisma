@@ -178,3 +178,15 @@ model TopicAnswer {
 
   @@map("topic_answers")
 }
+
+model Promo {
+id Int @id @default(autoincrement())
+title String 
+content String
+isVisible Boolean @default(false) @map("is_visible")
+
+createdAt DateTime @default(now()) @map("created_at")
+updatedAt DateTime @updatedAt @map("updated_at")
+
+@@map("promos")
+}

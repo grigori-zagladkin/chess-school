@@ -11,6 +11,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   app.use(cookieParser());
 
+  app.enableCors();
+
+  app.setGlobalPrefix('api');
+
   app.useLogger(app.get(Logger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 

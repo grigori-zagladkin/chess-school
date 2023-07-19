@@ -10,6 +10,7 @@ import { InitialFormsModule } from './initial-forms/initial-forms.module';
 import { MessagesModule } from './messages/messages.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { UsersModule } from './users/users.module';
+import { PromoModule } from './promo/promo.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     MessagesModule,
     ClassesModule,
     ForumModule,
+    PromoModule,
   ],
   controllers: [],
   providers: [],

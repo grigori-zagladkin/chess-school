@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
+import MainProvider from 'providers/MainProvider'
 
 import './globals.scss'
 
@@ -80,7 +81,9 @@ export default function RootLayout({
 				<meta name="msapplication-navbutton-color" content="#181B1E" />
 				<meta name="apple-mobile-web-app-status-bar-style" content="#181B1E" />
 			</head>
-			<body className={montserrat.className}>{children}</body>
+			<body className={montserrat.className}>
+				<MainProvider>{children}</MainProvider>
+			</body>
 		</html>
 	)
 }
